@@ -24,10 +24,13 @@ EventsRouter.get('/?name={texto}&category={texto}&startdate={fecha YYYY-MM-DD}&t
     const fechaEvento = req.params.startdate;
     const tagEvento = req.params.tag;//tenemos el id y vamos a hacer el innerjoin recien en el else if, como hacemos para tener el nombre acá
     const ArrayParams = [nombreEvento, categoriaEvento, fechaEvento, tagEvento];
+    const CombinacionParametros=[]
     ArrayParams.forEach(p => {
+        i=0;
         if (ArrayParams[p] != null)
         {
-            
+            CombinacionParametros[i]=ArrayParams[p]
+            i++;
         }
     });
     if (ValidacionesHelper.getStringOrDefault(nombreEvento,'Invitado') || ValidacionesHelper.getStringOrDefault(categoriaEvento,'Invitado')|| ValidacionesHelper.getStringOrDefault(fechaInicio, '') || ValidacionesHelper.getStringOrDefault(tagDeterminado, '')) {
