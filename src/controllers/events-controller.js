@@ -20,9 +20,9 @@ EventsRouter.get('' , async (req, res) => {
 EventsRouter.get('/?name={texto}&category={texto}&startdate={fecha YYYY-MM-DD}&tag={texto}' , async (req, res) => {
     let respuesta;
     const nombreEvento = req.params.name;
-    const categoriaEvento = req.params.category;//tenemos el id y vamos a hacer el innerjoin recien en el else if, como hacemos para tener el nombre acá
+    const categoriaEvento = req.params.category;
     const fechaEvento = req.params.startdate;
-    const tagEvento = req.params.tag;//tenemos el id y vamos a hacer el innerjoin recien en el else if, como hacemos para tener el nombre acá
+    const tagEvento = req.params.tag;
     const ArrayParams = [nombreEvento, categoriaEvento, fechaEvento, tagEvento];
     const CombinacionParametros=[]
     ArrayParams.forEach(p => {
@@ -33,22 +33,31 @@ EventsRouter.get('/?name={texto}&category={texto}&startdate={fecha YYYY-MM-DD}&t
             i++;
         }
     });
-    if (ValidacionesHelper.getStringOrDefault(nombreEvento,'Invitado') || ValidacionesHelper.getStringOrDefault(categoriaEvento,'Invitado')|| ValidacionesHelper.getStringOrDefault(fechaInicio, '') || ValidacionesHelper.getStringOrDefault(tagDeterminado, '')) {
-      if (nombreEvento != "Invitado") {
-       const event = await svc.getByNameAsync(nombreEvento); 
-       respuesta = res.status(200).json(event);
-      } else if (categoriaEvento != "Invitado" ){
-        const categoria = await svc.getByCategoryAsync(categoriaEvento);
-        respuesta = res.status(200).json(categoria)
-      }
-    } else if (fechaEvento != ''){
-        const fechaInicio = await svc.getByDateAsync(fechaEvento);
-        respuesta = res.status(200).json(fechaInicio);   
-    }
-    else{
-        const tagDeterminado = await svc.getByTagAsync(tagEvento);
-        respuesta = res.status(200).json(tagDeterminado);
-    }
+    CombinacionParametros.forEach(c => {
+        if ( typeof CombinacionParametros[c]=== "string")
+        {
+            ValidacionesHelper.getStringOrDefault(CombinacionParametros[c],'Invitado')
+            if (CombinacionParametros[c] === nombreEvento)
+            {
+                const event = await svc.getByNameAsync(nombreEvento); 
+                respuesta = res.status(200).json(event);
+            }
+            else if (CombinacionParametros[c] === categoriaEvento){
+                const categoria = await svc.getByCategoryAsync(categoriaEvento);
+                respuesta = res.status(200).json(categoria)
+            }
+            else{
+                const tagDeterminado = await svc.getByTagAsync(tagEvento);
+                respuesta = res.status(200).json(tagDeterminado);
+            }
+        }
+        else
+        {
+            ValidacionesHelper.getDateOrDefault(CombinacionParametros[c],"0")
+            const fechaInicio = await svc.getByDateAsync(fechaEvento);
+            respuesta = res.status(200).json(fechaInicio); 
+        }
+    })
     return respuesta;
 }); 
 

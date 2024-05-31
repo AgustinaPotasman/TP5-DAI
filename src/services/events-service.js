@@ -5,24 +5,24 @@ export default class EventsService {
         const EventsArray = await repo.getAllAsync();
         return EventsArray;
     }
-    getByNameAsync = async () =>{
+    getByNameAsync = async (nombreEvento) =>{
         const repo = new EventsRepository();
-        const event = await repo.getByNameAsync();
+        const event = await repo.getByNameAsync(nombreEvento);
         return event;
     }
-    getByCategoryAsync = async () =>{
+    getByCategoryAsync = async (categoriaEvento) =>{
         const repo = new EventsRepository();
-        const categoria = await repo.getByCategoryAsync();
+        const categoria = await repo.getByCategoryAsync(categoriaEvento);
         return categoria;
     }
-    getByDateAsync = async () =>{
+    getByDateAsync = async (fechaEvento) =>{
         const repo = new EventsRepository();
-        const fechaInicio = await repo.getByDateAsync();
+        const fechaInicio = await repo.getByDateAsync(fechaEvento);
         return fechaInicio;
     }
-    getByTagAsync = async () =>{
+    getByTagAsync = async (tagEvento) =>{
         const repo = new EventsRepository();
-        const tagDeterminado = await repo.getByTagAsync();
+        const tagDeterminado = await repo.getByTagAsync(tagEvento);
         return tagDeterminado;
     }
     
