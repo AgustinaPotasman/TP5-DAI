@@ -16,50 +16,52 @@ EventsRouter.get('' , async (req, res) => {
     return respuesta;
 });
 
-
-EventsRouter.get('/?name={texto}&category={texto}&startdate={fecha YYYY-MM-DD}&tag={texto}' , async (req, res) => {
+EventsRouter.get(parametros, async (req, res) => {
     let respuesta;
-    const nombreEvento = req.params.name;
-    const categoriaEvento = req.params.category;
-    const fechaEvento = req.params.startdate;
-    const tagEvento = req.params.tag;
-    const ArrayParams = [nombreEvento, categoriaEvento, fechaEvento, tagEvento];
-    const CombinacionParametros=[]
-    ArrayParams.forEach(p => {
-        i=0;
+    const ArrayParams = [req.params.name, req.params.category, req.params.startdate, req.params.tag];
+    let  parametros = '/?'
+    let query='SELECT * FROM events '
+    ArrayParams.forEach(p, i => {
         if (ArrayParams[p] != null)
-        {
-            CombinacionParametros[i]=ArrayParams[p]
-            i++;
-        }
-    });
-    CombinacionParametros.forEach(c => {
-        if ( typeof CombinacionParametros[c]=== "string")
-        {
-            ValidacionesHelper.getStringOrDefault(CombinacionParametros[c],'Invitado')
-            if (CombinacionParametros[c] === nombreEvento)
+        { 
+            if (i > 0)
             {
-                const event = await svc.getByNameAsync(nombreEvento); 
-                respuesta = res.status(200).json(event);
+                parametros.concat('&')
             }
-            else if (CombinacionParametros[c] === categoriaEvento){
-                const categoria = await svc.getByCategoryAsync(categoriaEvento);
-                respuesta = res.status(200).json(categoria)
+            if (ArrayParams[p]= nombreEvento){
+                parametros.concat('name={texto}')
+                query+=`WHERE ${req.params.name}`
             }
-            else{
-                const tagDeterminado = await svc.getByTagAsync(tagEvento);
-                respuesta = res.status(200).json(tagDeterminado);
+            else if(ArrayParams[p]=categoriaEvento){
+                parametros.concat('category={texto}')
+                query+=`INNER JOIN event_categories ON events.id_event_category == event_categories.id WHERE events_category.name=${req.params.category}`
+            }     
             }
-        }
-        else
-        {
-            ValidacionesHelper.getDateOrDefault(CombinacionParametros[c],"0")
-            const fechaInicio = await svc.getByDateAsync(fechaEvento);
-            respuesta = res.status(200).json(fechaInicio); 
-        }
+            else if (ArrayParams[p]= fechaEvento){
+                parametros.concat('startdate={fecha YYYY-MM-DD}')
+                query+=`WHERE start_date=${req.params.startdate}`
+            }
+            else if (ArrayParams[p]= tagEvento){
+                parametros.concat('tag={texto}')
+                query+=`INNER JOIN event_tags ON events_tags.id_event == event.id INNER JOIN tags ON tags.id = event_tags.id_tag WHERE tags.name=${req.params.tag}`
+            }
+            p++;
+            i++;
     })
+    let event = await svc.getByParamsAsync(query); 
+    try {
+        const { rows } = await pool.query(query, ArrayParams.filter(parametros => parametros !== null));
+        if (rows.length > 0) {
+            respuesta = res.status(200).json(rows);
+        } else {
+            respuesta = res.status(404).send('No se encontraron eventos que coincidan con los criterios de búsqueda.');
+        }
+    } catch (error) {
+        console.error('Error al buscar eventos:', error);
+        respuesta = res.status(500).send('Error interno.');
+    }
     return respuesta;
-}); 
+})
 
 EventsRouter.get('/{id}' , async (req, res) => {
 
