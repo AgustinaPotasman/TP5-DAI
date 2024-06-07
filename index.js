@@ -3,10 +3,11 @@ import cors from "cors";
 import EventsRouter from "./src/controllers/events-controller.js";
 const app = express();
 const port = 3000; 
-// Agrego los Middlewares
-app.use(cors()); // Middleware de CORS.
-app.use(express.json()); // Middleware para parsear y comprender JSON.
+
+app.use(cors()); 
+app.use(express.json()); 
 app.use("/api/event", EventsRouter);
+app.use('/api', EventsRouter);
 
 
 app.listen(port, () => {

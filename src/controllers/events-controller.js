@@ -16,7 +16,7 @@ EventsRouter.get('' , async (req, res) => {
     return respuesta;
 });
 
-EventsRouter.get(parametros, async (req, res) => {
+export default EventsRouter.get( async (req, res) => {
     let respuesta;
     const ArrayParams = [req.params.name, req.params.category, req.params.startdate, req.params.tag];
     let  parametros = '/?'
@@ -63,8 +63,18 @@ EventsRouter.get(parametros, async (req, res) => {
     return respuesta;
 })
 
-EventsRouter.get('/{id}' , async (req, res) => {
-
+EventsRouter.get('/event/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const evento = await eventoService.getEventoById(id);
+        if (evento) {
+            res.status(200).json(evento);
+        } else {
+            res.status(404).json({ message: 'Evento no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 EventsRouter.get('/{id}/enrollment?first_name={texto}&last_name={texto}&username={texto}&attended={boolean}&rating={entero}' , async (req, res) => {

@@ -10,5 +10,9 @@ export default class EventsService {
         const event = await repo.getByParamsAsync(query);
         return event;
     }
+     getEventoById = async (id) => {
+        return await eventoRepository.obtenerEventoPorId(id);
+    }
+    
     
 }

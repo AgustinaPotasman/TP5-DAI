@@ -5,6 +5,7 @@
     "pg": "^8.11.5"
   },
   "scripts": {
-    "start": "node events-controller.js"
-  }
+    "start": "node index.js"
+  },
+  "type": "module"
 }
