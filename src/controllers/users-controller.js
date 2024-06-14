@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import express from "express";
-import UserService from "../services/users-service.js"
+import UsersService from "../services/users-service.js"
 import jwt from 'jsonwebtoken';
 import ValidacionesHelper from "../helpers/validaciones-helper.js"
 const UserRouter =  Router();
@@ -63,3 +63,5 @@ UserRouter.post('/register', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+export default UserRouter;

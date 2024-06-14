@@ -1,6 +1,6 @@
 import { getUserByUsername, createUser } from '../repositories/users-repository.js';
 
-export {
-    getUserByUsername,
-    createUser
-};
+export default class UsersService {
+   /* getUserByUsername,
+    createUser*/
+}

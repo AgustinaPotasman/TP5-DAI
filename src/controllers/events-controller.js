@@ -17,38 +17,33 @@ EventsRouter.get('' , async (req, res) => {
     return respuesta;
 });
 
-export default EventsRouter.get( async (req, res) => {
-    let respuesta;
+ EventsRouter.get('', async (req, res) => {
+    const response = {
+        name: null,
+        category: null,
+        startdate: null,
+        tag:null
+    }
+    let temp=0;
+    for (const [key, value] of Object.entries(req.query)){
+        if(response[`${key}`]!==undefined)response[`${key}`]= value;
+    }
     const ArrayParams = [req.params.name, req.params.category, req.params.startdate, req.params.tag];
     let  parametros = '/?'
-    let query='SELECT * FROM events '
-    ArrayParams.forEach(p, i => {
-        if (ArrayParams[p] != null)
-        { 
-            if (i > 0)
-            {
-                parametros.concat('&')
-            }
-            if (ArrayParams[p]= req.params.name){
-                parametros.concat('name={texto}')
-                query+=`WHERE ${req.params.name}`
-            }
-            else if(ArrayParams[p]=req.params.category){
-                parametros.concat('category={texto}')
-                query+=`INNER JOIN event_categories ON events.id_event_category == event_categories.id WHERE events_category.name=${req.params.category}`
-            }     
-            }
-            else if (ArrayParams[p]= req.params.startdate){
-                parametros.concat('startdate={fecha YYYY-MM-DD}')
-                query+=`WHERE start_date=${req.params.startdate}`
-            }
-            else if (ArrayParams[p]= req.params.tag){
-                parametros.concat('tag={texto}')
-                query+=`INNER JOIN event_tags ON events_tags.id_event == event.id INNER JOIN tags ON tags.id = event_tags.id_tag WHERE tags.name=${req.params.tag}`
-            }
-            p++;
-            i++;
-    })
+    let query = 'WHERE ';
+    let i=0;
+    for (const [key, value] of Object.entries(response)){
+        if (value!=null){
+             query+=`${key}='${value}' `
+              if (i < Object.keys(response).length -1)
+        {
+            parametros.concat('& ')
+        }
+        i++;
+        }
+       
+    }
+   
     let event = await svc.getByParamsAsync(query); 
     try {
         const { rows } = await pool.query(query, ArrayParams.filter(parametros => parametros !== null));
@@ -78,7 +73,7 @@ EventsRouter.get('/id', async (req, res) => {
     }
 });
 
-EventsRouter.get( async (req, res) => {
+EventsRouter.get('', async (req, res) => {
     let respuesta;
     const ArrayParams = [req.params.first_name, req.params.last_name, req.params.username, req.params.attended, req.params.rating];
     let  parametros = '/?'
@@ -152,4 +147,4 @@ EventsRouter.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-
+export default EventsRouter;

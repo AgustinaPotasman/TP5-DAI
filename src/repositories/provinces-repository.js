@@ -11,9 +11,8 @@ export default class ProvincesRepository {
         return  ProvincesArray;
     }
     getByIdAsync = async (id) => {
-        const query = `SELECT * FROM provinces WHERE id = @pid`;
-        const result = await cliente.query(sql, new pid = id); 
-        const sql = query;
+        const query = `SELECT * FROM provinces WHERE id = ${id}`;
+        const result = await cliente.query(query); 
         const ProvincesArray = result;  
         await cliente.end();
         return ProvincesArray;

@@ -28,7 +28,7 @@ ProvincesRouter.get('/id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-ProvinceRouter.post("", async (req, res) => 
+ProvincesRouter.post("", async (req, res) => 
 {
     let respuesta;
     const entity = req.body;
@@ -46,7 +46,7 @@ ProvinceRouter.post("", async (req, res) =>
     return respuesta;
 });
 
-ProvinceRouter.put("/", async (req, res) => {
+ProvincesRouter.put("/", async (req, res) => {
     const updatedProvince = req.body;
     try {
         const result = await ProvincesService.updateProvince(updatedProvince);
@@ -60,7 +60,7 @@ ProvinceRouter.put("/", async (req, res) => {
     }
 });
 
-ProvinceRouter.delete("/:id", async (req, res) => {
+ProvincesRouter.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const result = await ProvincesService.deleteProvince(id);
@@ -73,3 +73,6 @@ ProvinceRouter.delete("/:id", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+
+export default ProvincesRouter;

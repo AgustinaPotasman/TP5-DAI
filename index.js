@@ -1,13 +1,17 @@
 import express from "express";
 import cors from "cors";
 import EventsRouter from "./src/controllers/events-controller.js";
+import ProvincesRouter from "./src/controllers/provinces-controller.js";
+import UsersRouter from "./src/controllers/users-controller.js";
 const app = express();
 const port = 3000; 
 
 app.use(cors()); 
 app.use(express.json()); 
-app.use("/api/event", EventsRouter);
-app.use('/api', EventsRouter);
+app.use('/api/province', ProvincesRouter);
+app.use('/api/user', UsersRouter);
+app.use('/api/event', EventsRouter);
+ 
 
 
 app.listen(port, () => {
