@@ -1,6 +1,6 @@
 import pkg from 'pg'
 const { Client, Pool } = pkg;
-export default class ProvinceRepository {
+export default class EventRepository {
     getAllAsync = async () => {
         const cliente = new Cliente(config);
         await cliente.connect();

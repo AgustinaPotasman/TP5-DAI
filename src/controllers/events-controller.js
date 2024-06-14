@@ -2,6 +2,7 @@ import {Router} from 'express';
 import express from "express";
 import EventsService from "../services/events-service.js"
 import ValidacionesHelper from "../helpers/validaciones-helper.js"
+import { authenticateToken } from '../middlewares/auth-middleware.js';
 const EventsRouter =  Router();
 const svc = new EventsService();
 
@@ -63,10 +64,10 @@ export default EventsRouter.get( async (req, res) => {
     return respuesta;
 })
 
-EventsRouter.get('/event/:id', async (req, res) => {
+EventsRouter.get('/id', async (req, res) => {
     try {
         const { id } = req.params;
-        const evento = await eventoService.getEventoById(id);
+        const evento = await svc.getByIdAsync(id);
         if (evento) {
             res.status(200).json(evento);
         } else {
@@ -126,6 +127,29 @@ EventsRouter.get( async (req, res) => {
         respuesta = res.status(500).send('Error interno.');
     }
     return respuesta;
+});
+EventsRouter.post('/', authenticateToken, async (req, res) => {
+    const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location } = req.body;
+    const userId = req.user.id;
+
+    if (!name || !description || name.length < 3 || description.length < 3) {
+        return res.status(400).json({ message: 'El nombre o la descripción son inválidos.' });
+    }
+
+    if (max_assistance > max_capacity) {
+        return res.status(400).json({ message: 'El max_assistance es mayor que el max_capacity.' });
+    }
+
+    if (price < 0 || duration_in_minutes < 0) {
+        return res.status(400).json({ message: 'El precio o la duración son inválidos.' });
+    }
+
+    try {
+        const newEvent = await createEvent({ name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location, userId });
+        res.status(201).json(newEvent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 
