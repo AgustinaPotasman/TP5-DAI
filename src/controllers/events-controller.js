@@ -28,20 +28,20 @@ export default EventsRouter.get( async (req, res) => {
             {
                 parametros.concat('&')
             }
-            if (ArrayParams[p]= nombreEvento){
+            if (ArrayParams[p]= req.params.name){
                 parametros.concat('name={texto}')
                 query+=`WHERE ${req.params.name}`
             }
-            else if(ArrayParams[p]=categoriaEvento){
+            else if(ArrayParams[p]=req.params.category){
                 parametros.concat('category={texto}')
                 query+=`INNER JOIN event_categories ON events.id_event_category == event_categories.id WHERE events_category.name=${req.params.category}`
             }     
             }
-            else if (ArrayParams[p]= fechaEvento){
+            else if (ArrayParams[p]= req.params.startdate){
                 parametros.concat('startdate={fecha YYYY-MM-DD}')
                 query+=`WHERE start_date=${req.params.startdate}`
             }
-            else if (ArrayParams[p]= tagEvento){
+            else if (ArrayParams[p]= req.params.tag){
                 parametros.concat('tag={texto}')
                 query+=`INNER JOIN event_tags ON events_tags.id_event == event.id INNER JOIN tags ON tags.id = event_tags.id_tag WHERE tags.name=${req.params.tag}`
             }
@@ -77,49 +77,55 @@ EventsRouter.get('/event/:id', async (req, res) => {
     }
 });
 
-EventsRouter.get('/{id}/enrollment?first_name={texto}&last_name={texto}&username={texto}&attended={boolean}&rating={entero}' , async (req, res) => {
-
+EventsRouter.get( async (req, res) => {
+    let respuesta;
+    const ArrayParams = [req.params.first_name, req.params.last_name, req.params.username, req.params.attended, req.params.rating];
+    let  parametros = '/?'
+    let query='SELECT * FROM  users '
+    ArrayParams.forEach(p, i => {
+        if (ArrayParams[p] != null)
+        { 
+            if (i > 0)
+            {
+                parametros.concat('&')
+            }
+            if (ArrayParams[p]= req.params.first_name){
+                parametros.concat('first_name={texto}')
+                query+=`WHERE ${req.params.name}`
+            }
+            else if(ArrayParams[p]=req.params.last_name){
+                parametros.concat('last_name={texto}}')
+                query+=`WHERE ${req.params.last_name}`
+            }     
+            }
+            else if (ArrayParams[p]= req.params.username){
+                parametros.concat('username={texto}')
+                query+=`WHERE ${req.params.username}`
+            }
+            else if (ArrayParams[p]= req.params.attended){
+                parametros.concat('attended={boolean}')
+                query+=`WHERE ${req.params.attended}`
+            }
+            else if (ArrayParams[p]= req.params.rating){
+                parametros.concat('rating={entero}')
+                query+=`WHERE ${req.params.rating}`
+            }
+            p++;
+            i++;
+    })
+    let event = await svc.getByParamsAsync(query); 
+    try {
+        const { rows } = await pool.query(query, ArrayParams.filter(parametros => parametros !== null));
+        if (rows.length > 0) {
+            respuesta = res.status(200).json(rows);
+        } else {
+            respuesta = res.status(404).send('No se encontraron eventos que coincidan con los criterios de búsqueda.');
+        }
+    } catch (error) {
+        console.error('Error al buscar eventos:', error);
+        respuesta = res.status(500).send('Error interno.');
+    }
+    return respuesta;
 });
-
-
-
-
-
-
-
-
-
-
-
-
-app.get('/api/province', (req, res) => {
-
-}) //falta router
-
-app.get('/api/province/{id}', (req, res) => {
-
-}) //falta router
-
-app.post('/api/province', (req, res) => {
-
-}) //falta router
-
-app.put('/api/province', (req, res) => {
-
-}) //falta router
-
-app.delete('/api/province/{id}', (req, res) => {
-
-}) //falta router
-
-
-EventsRouter.patch('/{id}/enrollment/{entero}' , async (req, res) => {
-
-});
-
-EventsRouter.get('/{id}/enrollment/{entero}' , async (req, res) => {
-
-});
-
 
 

@@ -11,7 +11,7 @@ export default class EventsService {
         return event;
     }
      getEventoById = async (id) => {
-        return await eventoRepository.obtenerEventoPorId(id);
+        return await eventoRepository.getByIdAsync(id);
     }
     
     
