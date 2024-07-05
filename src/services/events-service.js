@@ -5,16 +5,16 @@ export default class EventsService {
         const EventsArray = await repo.getAllAsync();
         return EventsArray;
     }
-    getByParamsAsync = async (query) =>{
+     searchEvents = async (filters) => {
         const repo = new EventsRepository();
-        const event = await repo.getByParamsAsync(query);
-        return event;
-    }
+        const EventsArray = await repo.searchEvents(filters);
+        return EventsArray;
+    };
      getEventoById = async (id) => {
-        return await eventoRepository.getByIdAsync(id);
+        return await EventsRepository.getByIdAsync(id);
     }
     createEvent = async (eventData) => {
-        return await eventoRepository.createEvent(eventData);
+        return await EventsRepository.createEvent(eventData);
     };
     
 }

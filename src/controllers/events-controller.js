@@ -6,7 +6,7 @@ import { authenticateToken } from '../middlewares/auth-middleware.js';
 const EventsRouter =  Router();
 const svc = new EventsService();
 
-EventsRouter.get('' , async (req, res) => {
+/*EventsRouter.get('' , async (req, res) => {
     let respuesta;
     const EventsArray = await svc.getAllAsync();
     if (EventsArray != null){
@@ -15,51 +15,20 @@ EventsRouter.get('' , async (req, res) => {
         respuesta = res.status(500).send(`Error interno.`);
     }
     return respuesta;
+});*/
+
+EventsRouter.get('/', async (req, res) => {
+    const { name, category, startdate, endDate, page, pageSize } = req.query;
+
+    try {
+        const events = await svc.searchEvents({ name, category, startdate, endDate, page, pageSize });
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
- EventsRouter.get('', async (req, res) => {
-    const response = {
-        name: null,
-        category: null,
-        startdate: null,
-        tag:null
-    }
-    let temp=0;
-    for (const [key, value] of Object.entries(req.query)){
-        if(response[`${key}`]!==undefined)response[`${key}`]= value;
-    }
-    const ArrayParams = [req.params.name, req.params.category, req.params.startdate, req.params.tag];
-    let  parametros = '/?'
-    let query = 'WHERE ';
-    let i=0;
-    for (const [key, value] of Object.entries(response)){
-        if (value!=null){
-             query+=`${key}='${value}' `
-              if (i < Object.keys(response).length -1)
-        {
-            parametros.concat('& ')
-        }
-        i++;
-        }
-       
-    }
-   
-    let event = await svc.getByParamsAsync(query); 
-    try {
-        const { rows } = await pool.query(query, ArrayParams.filter(parametros => parametros !== null));
-        if (rows.length > 0) {
-            respuesta = res.status(200).json(rows);
-        } else {
-            respuesta = res.status(404).send('No se encontraron eventos que coincidan con los criterios de búsqueda.');
-        }
-    } catch (error) {
-        console.error('Error al buscar eventos:', error);
-        respuesta = res.status(500).send('Error interno.');
-    }
-    return respuesta;
-})
-
-EventsRouter.get('/id', async (req, res) => {
+EventsRouter.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const evento = await svc.getByIdAsync(id);
