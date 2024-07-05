@@ -6,17 +6,6 @@ import { authenticateToken } from '../middlewares/auth-middleware.js';
 const EventsRouter =  Router();
 const svc = new EventsService();
 
-/*EventsRouter.get('' , async (req, res) => {
-    let respuesta;
-    const EventsArray = await svc.getAllAsync();
-    if (EventsArray != null){
-        respuesta = res.status(200).json(EventsArray);
-    } else {
-        respuesta = res.status(500).send(`Error interno.`);
-    }
-    return respuesta;
-});*/
-
 EventsRouter.get('/', async (req, res) => {
     const { name, category, startdate, endDate, page, pageSize } = req.query;
 
@@ -30,7 +19,7 @@ EventsRouter.get('/', async (req, res) => {
 
 EventsRouter.get('/:id', async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.query;
         const evento = await svc.getByIdAsync(id);
         if (evento) {
             res.status(200).json(evento);

@@ -3,15 +3,6 @@ import DBConfig from "../configs/db-config.js"
 import pool from "../configs/db-config.js";
 const { Client, Pool } = pkg;
 export default class EventRepository {
-    getAllAsync = async () => {
-        const client = new Client(DBConfig);
-        await client.connect();
-        const sql = 'SELECT * from events'
-        const result = await client.query(sql);  
-        const EventsArray=result;  
-        await client.end();
-        return  EventsArray;
-    }
     searchEvents = async (filters) => {
     const client = await pool.connect();
     const { name, category, startdate, tag, limit, offset } = filters;
@@ -82,18 +73,20 @@ export default class EventRepository {
     getByIdAsync = async (id) => {
         const query = `
           SELECT 
-            e.Id, e.Nombre, e.Descripcion, e.Fecha,
-            l.Nombre as Localidad, 
-            p.Nombre as Provincia
-          FROM public.Evento e
-          JOIN public.Localidad l ON e.IdLocalidad = l.Id
-          JOIN public.Provincia p ON l.IdProvincia = p.Id
-          WHERE e."Id" = $1
+            e.id, e.name, e.description, e.startdate,
+            l.name as locations, 
+            p.name as provinces
+          FROM  events  e
+          JOIN locations l ON e.id_location = l.id
+          JOIN provinces p ON l.id_province = p.id
+          WHERE e.id=${id}
         `;
         const values = [id];
+        console.log(id);
         try {
-          const { rows } = await pool.query(query, values);
+          const { rows } = await pool.query(query, values); 
           return rows[0];
+         
         } catch (error) {
           console.error('Error al obtener el evento:', error);
           throw error;
