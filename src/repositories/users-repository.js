@@ -1,29 +1,48 @@
+import config from "../configs/dbConfig.js";
+import pkg from "pg";
+const { Pool } = pkg;
 
-import pkg from 'pg'
-const { Client, Pool } = pkg;
-export const getUserByUsername = async (username, password) => {
-    let respuesta = null;
-    const client = await config.connect();
-    try {
-        const res = await client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [username, password]);
-        if (res.rows.length > 0 ){
-            respuesta = res.rows[0];
+export default class UserRepository {
+    constructor() {
+        this.pool = new Pool(config);
+    }
+
+    async login(username, password) {
+        const client = await this.pool.connect();
+        try {
+            const rta = await client.query(
+                `SELECT * FROM users WHERE username = $1 AND password = $2`, //$1 y $ 2 son parámetros CONFIRMADO
+                [username, password]
+            );
+            return rta.rows[0];
+        } catch (error) {
+            console.error(error);
+        } 
+    }
+
+        /*const findUserByUsername = async (username) => {
+        const result = await pool.query('SELECT * FROM public.users WHERE username = $1', [username]);
+        return result.rows[0];
+        };
+
+        module.exports = {
+        findUserByUsername,
+        };*/ 
+
+        async crearUser(first_name, last_name, username, password) {
+            const client = await this.pool.connect();
+            try {
+                await client.query(
+                    `INSERT INTO users (first_name, last_name, username , password) VALUES ($1, $2, $3, $4)`,
+                    [first_name, last_name, username, password]
+                );
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            } finally {
+                client.release();
+            }
         }
-    } finally {
-        client.release();
     }
-    return respuesta;
-};
-export const createUser = async (userData) => {
-    const client = await config.connect();
-    try {
-        const res = await client.query(
-            'INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING *',
-            [userData.first_name, userData.last_name, userData.username, userData.password]
-        );
-        console.log('Nuevo User:', res.rows[0]);
-        return res.rows[0];
-    } finally {
-        client.release();
-    }
-};
+

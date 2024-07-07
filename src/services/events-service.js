@@ -18,5 +18,14 @@ export default class EventsService {
     createEvent = async (eventData) => {
         return await EventsRepository.createEvent(eventData);
     };
+
+    enrollAsync(id, userId) {
+        const repo = new EventsRepository();
+        return repo.enrollAsync(id, userId);
+    }
+
+    unenrollAsync(id, userId) {
+        return this.repo.unenrollAsync(id, userId);
+    }
     
 }

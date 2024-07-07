@@ -5,37 +5,41 @@ import jwt from 'jsonwebtoken';
 import ValidacionesHelper from "../helpers/validaciones-helper.js"
 const UserRouter =  Router();
 const svc = new UsersService()
+
 UserRouter.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    console.log('username:', username);
-    console.log('password:', password);
-
-    try {
-        const user = await getUserByUsername(username, password);
-        console.log('Usuario recuperado de la BD: ', user);
-
-        if (user == null) {
-            console.log('Usuario no encontrado');
-            return res.status(401).json({
-                success: false,
-                message: 'Usuario o clave inválida.',
-                token: ''
-            });
-        }
-        
-        console.log('OK',user);
-        const token = jwt.sign(user, 'your_jwt_secret', { expiresIn: '1h' });
-        console.log('Token generado:', token);
-
-        res.status(200).json({
-            success: true,
-            message: 'Login exitoso.',
-            token: token
-        });
-    } catch (error) {
-        console.error('Error en login:', error);
-        res.status(500).json({ success: false, message: error.message });
+    const username = getString(req.body.username);
+    const password = getString(req.body.password);
+    const rta = await svc.login(username, password);
+    if (rta) {
+        const token = jwt.sign({ id: result.id, username: result.username}, process.env.SECRET_KEY, { expiresIn: '1h', issuer: '' });
+        res.status(201).json({"success": true, "token": token})
     }
+    else {
+        res.status(404).send('Usuario no encontrado');
+    }
+
+    /*const express = require('express');
+    const router = express.Router();
+    const usersService = require('./users-service');
+
+    router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ success: false, message: 'El email es invalido.', token: '' });
+    }
+
+    const response = await usersService.loginUser(username, password);
+
+    if (response.success) {
+        res.status(200).json(response);
+    } else {
+        res.status(401).json(response);
+    }
+    });
+
+    module.exports = router;
+    */
 });
 
 UserRouter.post('/register', async (req, res) => {
@@ -45,23 +49,26 @@ UserRouter.post('/register', async (req, res) => {
         return res.status(400).json({ message: 'Los campos first_name o last_name están vacíos.' });
     }
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(username)) {
-        return res.status(400).json({ message: 'El email (username) es sintácticamente inválido.' });
+    const email = /\S+@\S+\.\S+/;
+    if (!email.test(username)) {
+        return res.status(400).json({ message: 'El email (username) es inválido.' });
     }
 
     if (password.length < 3) {
-        return res.status(400).json({ message: 'El campo password no cumple con el mínimo de letras.' });
+        return res.status(400).json({ message: 'La password tiene menos de 3 letras.' });
     }
 
     try {
-        const newUser = await createUser({ first_name, last_name, username, password});
-        console.log('Nuevo usuario creado:', newUser);
+        //const hashedPassword = await bcrypt.hash(password, 10);
+        const usuarioNuevo = await crearUser({ first_name, last_name, username, password});
+        console.log('New user created:', usuarioNuevo);
         res.status(201).json({ message: 'Usuario registrado exitosamente.' });
     } catch (error) {
-        console.error('Error en el registro:', error);
+        console.error('Error during registration:', error);
         res.status(500).json({ message: error.message });
     }
 });
 
+
 export default UserRouter;
+
