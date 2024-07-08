@@ -1,4 +1,5 @@
 import EventsRepository from '../repositories/events-repository.js';
+import rateEventRepo from '../repositories/events-repository.js';
 export default class EventsService {
     getAllAsync = async () => {
         const repo = new EventsRepository();
@@ -27,5 +28,8 @@ export default class EventsService {
     unenrollAsync(id, userId) {
         return this.repo.unenrollAsync(id, userId);
     }
+    rateEvent = async (eventId, userId, rating, observations) => {
+        return await rateEventRepo(eventId, userId, rating, observations);
+    };
     
 }

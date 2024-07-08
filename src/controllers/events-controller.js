@@ -143,5 +143,19 @@ EventController.delete('/:id/enrollment', authenticateToken, async (req, res) =>
     }
 });
 
+router.patch('/:id/enrollment/:rating', authenticateToken, async (req, res) => {
+    const eventId = req.params.id;
+    const rating = req.params.rating;
+    const userId = req.user.id;
+    const { observations } = req.body;
+    let respuesta;
+    try {
+        await rateEvent(eventId, userId, rating, observations);
+        respuesta = res.status(200).json({ message: 'Evento rankeado correctamente.' });
+    } catch (error) {
+        respuesta = res.status(error.status || 500).json({ message: error.message });
+    }
+    return respuesta;
+});
 
 export default EventsRouter;
