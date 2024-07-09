@@ -31,56 +31,30 @@ EventsRouter.get('/:id', async (req, res) => {
     }
 });
 
-EventsRouter.get('', async (req, res) => {
-    let respuesta;
-    const ArrayParams = [req.params.first_name, req.params.last_name, req.params.username, req.params.attended, req.params.rating];
-    let  parametros = '/?'
-    let query='SELECT * FROM  users '
-    ArrayParams.forEach(p, i => {
-        if (ArrayParams[p] != null)
-        { 
-            if (i > 0)
-            {
-                parametros.concat('&')
-            }
-            if (ArrayParams[p]= req.params.first_name){
-                parametros.concat('first_name={texto}')
-                query+=`WHERE ${req.params.name}`
-            }
-            else if(ArrayParams[p]=req.params.last_name){
-                parametros.concat('last_name={texto}}')
-                query+=`WHERE ${req.params.last_name}`
-            }     
-            }
-            else if (ArrayParams[p]= req.params.username){
-                parametros.concat('username={texto}')
-                query+=`WHERE ${req.params.username}`
-            }
-            else if (ArrayParams[p]= req.params.attended){
-                parametros.concat('attended={boolean}')
-                query+=`WHERE ${req.params.attended}`
-            }
-            else if (ArrayParams[p]= req.params.rating){
-                parametros.concat('rating={entero}')
-                query+=`WHERE ${req.params.rating}`
-            }
-            p++;
-            i++;
-    })
-    let event = await svc.getByParamsAsync(query); 
+EventsRouter.get('/', async (req, res) => {
+    const { name, category, startDate, endDate, page, pageSize } = req.query;
+
     try {
-        const { rows } = await pool.query(query, ArrayParams.filter(parametros => parametros !== null));
-        if (rows.length > 0) {
-            respuesta = res.status(200).json(rows);
-        } else {
-            respuesta = res.status(404).send('No se encontraron eventos que coincidan con los criterios de búsqueda.');
-        }
+        const events = await svc.searchEvents({ name, category, startDate, endDate, page, pageSize });
+        res.status(200).json(events);
     } catch (error) {
-        console.error('Error al buscar eventos:', error);
-        respuesta = res.status(500).send('Error interno.');
+        res.status(500).json({ message: error.message });
     }
-    return respuesta;
 });
+
+EventsRouter.get('/:id/enrollment', async (req, res) => {
+    const eventId = req.params.id;
+    try {
+        const enrollments = await svc.listParticipantes(eventId);
+        if (!enrollments) {
+            return res.status(404).json({ message: 'No se encontraron inscripciones para este evento.' });
+        }
+        res.status(200).json(enrollments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 EventsRouter.post('/', authenticateToken, async (req, res) => {
     const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location } = req.body;
     const userId = req.user.id;
