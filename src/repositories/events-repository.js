@@ -68,7 +68,49 @@ export default class EventRepository {
         client.release();
     }
 };
+listParticipantes = async (eventId, filters) => {
+    const client = await pool.connect();
+    const { first_name, last_name, username, attended, rating } = filters || {}; 
+    const conditions = [];
+    const values = [eventId];
 
+    if (first_name) {
+        values.push(`%${first_name}%`);
+        conditions.push(`u.first_name ILIKE $${values.length}`);
+    }
+    if (last_name) {
+        values.push(`%${last_name}%`);
+        conditions.push(`u.last_name ILIKE $${values.length}`);
+    }
+    if (username) {
+        values.push(`%${username}%`);
+        conditions.push(`u.username ILIKE $${values.length}`);
+    }
+    if (attended !== undefined) {
+        values.push(attended);
+        conditions.push(`e.attended = $${values.length}`);
+    }
+    if (rating) {
+        values.push(rating);
+        conditions.push(`e.rating >= $${values.length}`);
+    }
+
+    const whereClause = conditions.length ? `AND ${conditions.join(' AND ')}` : '';
+
+    try {
+        const res = await client.query(`
+            SELECT 
+                e.id, e.id_event, e.id_user, e.description, e.registration_date_time, e.attended, e.observations, e.rating,
+                u.id as user_id, u.first_name, u.last_name, u.username
+            FROM event_enrollments e
+            JOIN users u ON e.id_user = u.id
+            WHERE e.id_event = $1 ${whereClause}
+        `, values);
+        return res.rows;
+    } finally {
+        client.release();
+    }
+};
 
     getByIdAsync = async (id) => {
         const query = `
