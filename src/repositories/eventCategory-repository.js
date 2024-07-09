@@ -47,4 +47,15 @@ export default class ECRepository{
         }
     }
 
+    deleteCategoryAsync = async (cat) => {
+        const client = await pool.connect()
+        try {
+            const res = await client.query('DELETE FROM event_categories WHERE id = $1', [id])
+            return res;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
 }

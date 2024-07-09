@@ -48,4 +48,14 @@ EventsCategoryRouter.put('/', async (req, res) => {
     }
 })
 
+EventsCategoryRouter.delete('/:id', async (req, res) => {
+    const id = req.params;
+    const catDeleteada = await svc.deleteCategoryAsync(id);
+    if (catDeleteada) {
+        res.status(200).send();
+    } else {
+        res.status(404).send();
+    }
+})
+
 

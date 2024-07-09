@@ -25,4 +25,10 @@ export default class ECService {
         return catUpdateada;
     }
 
+    deleteCategoryAsync = async (id) => {
+        const repo = new ECRepository();
+        const catDeleteada = await repo.deleteCategoryAsync(id)
+        return catDeleteada;
+    }
+
 }
