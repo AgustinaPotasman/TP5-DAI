@@ -68,7 +68,49 @@ export default class EventRepository {
         client.release();
     }
 };
+listParticipantes = async (eventId, filters) => {
+    const client = await pool.connect();
+    const { first_name, last_name, username, attended, rating } = filters || {}; 
+    const conditions = [];
+    const values = [eventId];
 
+    if (first_name) {
+        values.push(`%${first_name}%`);
+        conditions.push(`u.first_name ILIKE $${values.length}`);
+    }
+    if (last_name) {
+        values.push(`%${last_name}%`);
+        conditions.push(`u.last_name ILIKE $${values.length}`);
+    }
+    if (username) {
+        values.push(`%${username}%`);
+        conditions.push(`u.username ILIKE $${values.length}`);
+    }
+    if (attended !== undefined) {
+        values.push(attended);
+        conditions.push(`e.attended = $${values.length}`);
+    }
+    if (rating) {
+        values.push(rating);
+        conditions.push(`e.rating >= $${values.length}`);
+    }
+
+    const whereClause = conditions.length ? `AND ${conditions.join(' AND ')}` : '';
+
+    try {
+        const res = await client.query(`
+            SELECT 
+                e.id, e.id_event, e.id_user, e.description, e.registration_date_time, e.attended, e.observations, e.rating,
+                u.id as user_id, u.first_name, u.last_name, u.username
+            FROM event_enrollments e
+            JOIN users u ON e.id_user = u.id
+            WHERE e.id_event = $1 ${whereClause}
+        `, values);
+        return res.rows;
+    } finally {
+        client.release();
+    }
+};
 
     getByIdAsync = async (id) => {
         const query = `
@@ -174,5 +216,46 @@ export default class EventRepository {
             return false;
         }
     }
-
+    async rateEventRepo (eventId, userId, rating, observations) {
+        const client = await pool.connect();
+        try {
+            // Verificar si el usuario está registrado al evento
+            const enrollmentRes = await client.query('SELECT * FROM event_enrollments WHERE id_user = $1 AND id_event = $2', [userId, eventId]);
+            if (enrollmentRes.rows.length === 0) {
+                return { status: 400, message: 'El usuario no está registrado al evento.' };
+            }
+    
+            const eventRes = await client.query('SELECT * FROM events WHERE id = $1', [eventId]);
+            const event = eventRes.rows[0];
+            if (!event) {
+                return { status: 404, message: 'Evento no encontrado.' };
+            }
+            const currentTime = new Date();
+            const eventEndDate = new Date(event.start_date);
+    
+            if (rating < 1 || rating > 10) {
+                return { status: 400, message: 'El rating debe estar entre 1 y 10 (inclusive).' };
+            }
+            if (eventEndDate >= currentTime) {
+                return { status: 400, message: 'El evento no ha finalizado aún.' };
+            }
+            const numericRating = Number(rating);
+            const updateQuery = 'UPDATE event_enrollments SET rating = $1, observations = $2 WHERE id_event = $3 AND id_user = $4';
+            const updateValues = [numericRating, observations, eventId, userId];
+            const updateRes = await client.query(updateQuery, updateValues);
+    
+            if (updateRes.rowCount === 0) {
+                return { status: 500, message: 'Error al actualizar el rating.' };
+            }
+            const postUpdateRes = await client.query('SELECT rating, observations FROM event_enrollments WHERE id_event = $1 AND id_user = $2', [eventId, userId]);
+    
+            if (postUpdateRes.rows[0].rating !== numericRating) {
+                return { status: 500, message: 'El rating no se actualizó correctamente en la base de datos.' };
+            }
+    
+            return { message: 'Evento rankeado correctamente.' };
+        } finally {
+            client.release();
+        } 
+    };
 }

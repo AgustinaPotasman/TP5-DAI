@@ -1,4 +1,5 @@
 import EventsRepository from '../repositories/events-repository.js';
+import rateEventRepo from '../repositories/events-repository.js';
 export default class EventsService {
     getAllAsync = async () => {
         const repo = new EventsRepository();
@@ -10,13 +11,20 @@ export default class EventsService {
         const EventsArray = await repo.searchEvents(filters);
         return EventsArray;
     };
+    listParticipantes= async (eventId, filters) => {
+        const repo = new EventsRepository();
+        const EventsArray = await repo.listParticipantes(eventId, filters);
+        return EventsArray;
+    };
      getEventoById = async (id) => {
         const repo = new EventsRepository();
         const EventsArray = await repo.getByIdAsync(id);
         return EventsArray;
     }
     createEvent = async (eventData) => {
-        return await EventsRepository.createEvent(eventData);
+        const repo = new EventsRepository();
+        const EventsArray = await repo.createEvent(eventData);
+        return EventsArray;
     };
 
     enrollAsync(id, userId) {
@@ -27,5 +35,8 @@ export default class EventsService {
     unenrollAsync(id, userId) {
         return this.repo.unenrollAsync(id, userId);
     }
+    rateEvent = async (eventId, userId, rating, observations) => {
+        return await rateEventRepo(eventId, userId, rating, observations);
+    };
     
 }

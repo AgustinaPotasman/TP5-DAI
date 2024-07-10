@@ -1,4 +1,4 @@
-import UserRepository from '../repositories/user-repository.js';
+import UserRepository from '../repositories/users-repository.js';
 
 export default class UsersService {
     constructor() {
@@ -34,8 +34,8 @@ module.exports = {
 };
  */
 
-    register(first_name, last_name, username, password) {
-        return this.repo.register(first_name, last_name, username, password);
+    crearUser(first_name, last_name, username, password) {
+        return this.repo.crearUser(first_name, last_name, username, password);
     }
 }
 

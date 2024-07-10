@@ -7,8 +7,8 @@ const UserRouter =  Router();
 const svc = new UsersService()
 
 UserRouter.post('/login', async (req, res) => {
-    const username = getString(req.body.username);
-    const password = getString(req.body.password);
+    const username = req.body.username;
+    const password = req.body.password;
     const rta = await svc.login(username, password);
     if (rta) {
         const token = jwt.sign({ id: result.id, username: result.username}, process.env.SECRET_KEY, { expiresIn: '1h', issuer: '' });
@@ -17,6 +17,9 @@ UserRouter.post('/login', async (req, res) => {
     else {
         res.status(404).send('Usuario no encontrado');
     }
+
+
+
 
     /*const express = require('express');
     const router = express.Router();
@@ -60,7 +63,7 @@ UserRouter.post('/register', async (req, res) => {
 
     try {
         //const hashedPassword = await bcrypt.hash(password, 10);
-        const usuarioNuevo = await crearUser({ first_name, last_name, username, password});
+        const usuarioNuevo = await svc.crearUser({ first_name, last_name, username, password});
         console.log('New user created:', usuarioNuevo);
         res.status(201).json({ message: 'Usuario registrado exitosamente.' });
     } catch (error) {

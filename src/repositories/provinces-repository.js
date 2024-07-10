@@ -1,20 +1,22 @@
 import pkg from 'pg'
 const { Client, Pool } = pkg;
+import config from "../configs/db-config.js"
+
 export default class ProvincesRepository {
     getAllAsync = async () => {
-        const cliente = new Cliente(config);
-        await cliente.connect();
+        const client = new Client(config);
+        await client.connect();
         const sql = 'SELECT * from provinces'
-        const result = await cliente.query(sql);  
+        const result = await client.query(sql);  
         const EventsArray=result;  
-        await cliente.end();
+        await client.end();
         return  ProvincesArray;
     }
     getByIdAsync = async (id) => {
-        const query = `SELECT * FROM provinces WHERE id = ${id}`;
-        const result = await cliente.query(query); 
+        const query = ('SELECT * FROM provinces WHERE id = $1 ', [id]);
+        const result = await client.query(query); 
         const ProvincesArray = result;  
-        await cliente.end();
+        await client.end();
         return ProvincesArray;
     }
      createAsync= async(province)  =>{

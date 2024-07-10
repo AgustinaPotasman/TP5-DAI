@@ -1,4 +1,4 @@
-import config from "../configs/dbConfig.js";
+import config from "../configs/db-config.js";
 import pkg from "pg";
 const { Pool } = pkg;
 
@@ -11,9 +11,10 @@ export default class UserRepository {
         const client = await this.pool.connect();
         try {
             const rta = await client.query(
-                `SELECT * FROM users WHERE username = $1 AND password = $2`, //$1 y $ 2 son parámetros CONFIRMADO
+                `SELECT * FROM users WHERE username = $1 AND password = $2`, 
                 [username, password]
             );
+            console.log(rta)
             return rta.rows[0];
         } catch (error) {
             console.error(error);
