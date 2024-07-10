@@ -22,7 +22,9 @@ export default class EventsService {
         return EventsArray;
     }
     createEvent = async (eventData) => {
-        return await EventsRepository.createEvent(eventData);
+        const repo = new EventsRepository();
+        const EventsArray = await repo.createEvent(eventData);
+        return EventsArray;
     };
 
     enrollAsync(id, userId) {

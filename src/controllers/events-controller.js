@@ -54,7 +54,7 @@ EventsRouter.get('/:id/enrollment', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
+//8
 EventsRouter.post('/', authenticateToken, async (req, res) => {
     const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location } = req.body;
     const userId = req.user.id;
@@ -78,6 +78,38 @@ EventsRouter.post('/', authenticateToken, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+EventsRouter.put('/', authenticateToken, async (req, res) => {
+    const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location } = req.body;
+    const userId = req.user.id;
+    if (!name || !description || name.length < 3 || description.length < 3) {
+        return res.status(400).json({ message: 'El nombre o la descripción son inválidos.' });
+    }
+
+    if (max_assistance > max_capacity) {
+        return res.status(400).json({ message: 'El max_assistance es mayor que el max_capacity.' });
+    }
+
+    if (price < 0 || duration_in_minutes < 0) {
+        return res.status(400).json({ message: 'El precio o la duración son inválidos.' });
+    }
+    if(!userId)// en caso de que no se encuentre autenticado (nose como verificar eso)
+    {
+        return res.status(401).json({ message: 'El usuario no se encuentra autenticado' });
+    }
+    const Id = svc.getById(id);
+    if (!Id) { // falta ver si pertenece al usuario autenticado 
+        res.status(404).send('El evento no existe o no le pretenece al usuario autenticado');
+        return;
+    }
+    try {
+        const newEvent = await updateEvent({ name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location, userId });
+        res.status(200).json(newEvent);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 EventsRouter.post('/:id/enrollment', authenticateToken, async (req, res) => {
     const id = req.params.id
@@ -116,7 +148,7 @@ EventsRouter.delete('/:id/enrollment', authenticateToken, async (req, res) => {
         res.status(400).send('El evento ya pasó');
     }
 });
-
+ 
 EventsRouter.patch('/:id/enrollment/:rating', authenticateToken, async (req, res) => {
     const eventId = req.params.id;
     const rating = req.params.rating;
@@ -124,7 +156,7 @@ EventsRouter.patch('/:id/enrollment/:rating', authenticateToken, async (req, res
     const { observations } = req.body;
     let respuesta;
     try {
-        await rateEvent(eventId, userId, rating, observations);
+        await rateEvent(eventId, userId, rating, observations);           
         respuesta = res.status(200).json({ message: 'Evento rankeado correctamente.' });
     } catch (error) {
         respuesta = res.status(error.status || 500).json({ message: error.message });
