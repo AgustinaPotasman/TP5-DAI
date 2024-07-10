@@ -79,7 +79,7 @@ EventsRouter.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-EventController.post('/:id/enrollment', authenticateToken, async (req, res) => {
+EventsRouter.post('/:id/enrollment', authenticateToken, async (req, res) => {
     const id = req.params.id
     if (id === null) {
         res.status(400).send('El id de evento debe ser un número entero');
@@ -99,7 +99,7 @@ EventController.post('/:id/enrollment', authenticateToken, async (req, res) => {
     }
 })
 
-EventController.delete('/:id/enrollment', authenticateToken, async (req, res) => {
+EventsRouter.delete('/:id/enrollment', authenticateToken, async (req, res) => {
     const id = req.params.id
     if (id === null) {
         res.status(400).send('El id de evento tiene que ser un número entero');
@@ -117,7 +117,7 @@ EventController.delete('/:id/enrollment', authenticateToken, async (req, res) =>
     }
 });
 
-router.patch('/:id/enrollment/:rating', authenticateToken, async (req, res) => {
+EventsRouter.patch('/:id/enrollment/:rating', authenticateToken, async (req, res) => {
     const eventId = req.params.id;
     const rating = req.params.rating;
     const userId = req.user.id;
