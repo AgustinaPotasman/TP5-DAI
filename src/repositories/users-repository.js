@@ -7,15 +7,16 @@ export default class UserRepository {
         this.pool = new Pool(config);
     }
 
-    async login(username, password) {
+    login = async (username, password) => {
         const client = await this.pool.connect();
         try {
             const rta = await client.query(
                 `SELECT * FROM users WHERE username = $1 AND password = $2`, 
                 [username, password]
             );
-            console.log(rta)
-            return rta.rows[0];
+            if (res.rows.length > 0 ){
+                return res.rows[0];
+            }
         } catch (error) {
             console.error(error);
         } 

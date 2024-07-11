@@ -6,12 +6,12 @@ const ProvincesRouter =  Router();
 const svc = new ProvincesService();
 
 ProvincesRouter.get('' , async (req, res) => {
-    let respuesta;
     const ProvinceArray = await svc.getAllAsync();
+    console.log(ProvinceArray)
     if (ProvinceArray != null){
-        respuesta = res.status(200).json(ProvinceArray);
+        res.status(200).json(ProvinceArray);
     } else {
-        respuesta = res.status(500).send(`Error interno.`);
+        res.status(500).send(`Error interno.`);
     }
     return respuesta;
 });
@@ -49,7 +49,7 @@ ProvincesRouter.post("", async (req, res) =>
 ProvincesRouter.put("/", async (req, res) => {
     const updatedProvince = req.body;
     try {
-        const result = await ProvincesService.updateProvince(updatedProvince);
+        const result = await svc.updateProvince(updatedProvince);
         if (result.modifiedCount === 1) {
             res.status(201).json({ message: "Province actualizada" });
         } else {
@@ -63,7 +63,7 @@ ProvincesRouter.put("/", async (req, res) => {
 ProvincesRouter.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await ProvincesService.deleteProvince(id);
+        const result = await svc.deleteProvince(id);
         if (result.deletedCount === 1) {
             res.status(200).json({ message: "Province borrada" });
         } else {

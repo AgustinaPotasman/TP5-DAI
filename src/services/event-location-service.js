@@ -1,6 +1,7 @@
-import EventLocationRepository from '../repositories/event-location-repository.js';
+import EventLocationRepository from '../repositories/location-repository.js';
 
 export default class EventLocationService {
+  
   getAllEventLocations = async () => {
     const repo = new EventLocationRepository();
     return await repo.getAllEventLocations();

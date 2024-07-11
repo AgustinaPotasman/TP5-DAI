@@ -4,9 +4,10 @@ export default class UsersService {
     constructor() {
         this.repos = new UserRepository();
     }
-    login(username, password) {
+    login = async (username, password) => {
         return this.repos.login(username, password);
     }
+  
 
     /*const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');

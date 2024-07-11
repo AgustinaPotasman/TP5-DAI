@@ -1,25 +1,20 @@
+import express from "express";
+import {Router} from 'express';
+import { authenticateToken } from '../middlewares/auth-middleware.js';
+import locationService from "../services/event-location-service.js"
+const svc = new locationService()
+
 const router = express.Router();
 
-router.get('/', authenticateToken, async (req, res) => {
-    const userId = req.user.id;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const offset = parseInt(req.query.offset, 10) || 0;
-
-    try {
-        const { eventLocations, total } = await getAllEventLocations(userId, limit, offset);
-        res.status(200).json({
-            collection: eventLocations,
-            pagination: {
-                limit,
-                offset,
-                total,
-                nextPage: offset + limit < total ? `/api/event-location?limit=${limit}&offset=${offset + limit}` : null
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+router.get('/', async (req, res) => {
+    const result = await svc.getAllEventLocations();
+    if (result) {
+        res.status(200).send(result);
+    } else {
+        res.status(500).send('Error interno');
     }
 });
+
 
 // por id
 router.get('/:id', authenticateToken, async (req, res) => {

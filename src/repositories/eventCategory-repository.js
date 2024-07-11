@@ -1,6 +1,6 @@
-import config from '../configs/dbConfig.js'
 import pkg from 'pg';
-const { Client, Pool } = pkg;
+import pool from "../configs/db-config.js";
+const { Client } = pkg;
 
 export default class ECRepository{
     getAllAsync = async () => {
@@ -26,13 +26,14 @@ export default class ECRepository{
         }
 
     createCategoryAsync = async (cat) => {
-        const client = await pool.connect()
+        const client = await pool.connect();
         try {
             const res = await client.query('INSERT INTO event_categories (name, display_order) VALUES ($1, $2)', [cat.name, cat.display_order]);
-            return res.rows[0];
+            return res.rows;
         } catch (error) {
             console.error(error);
-            return null;
+        } finally {
+            client.release();
         }
     }
 

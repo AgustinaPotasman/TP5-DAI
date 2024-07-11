@@ -68,49 +68,78 @@ export default class EventRepository {
         client.release();
     }
 };
-listParticipantes = async (eventId, filters) => {
+
+ getById = async (eventId) => {
     const client = await pool.connect();
-    const { first_name, last_name, username, attended, rating } = filters || {}; 
-    const conditions = [];
-    const values = [eventId];
-
-    if (first_name) {
-        values.push(`%${first_name}%`);
-        conditions.push(`u.first_name ILIKE $${values.length}`);
-    }
-    if (last_name) {
-        values.push(`%${last_name}%`);
-        conditions.push(`u.last_name ILIKE $${values.length}`);
-    }
-    if (username) {
-        values.push(`%${username}%`);
-        conditions.push(`u.username ILIKE $${values.length}`);
-    }
-    if (attended !== undefined) {
-        values.push(attended);
-        conditions.push(`e.attended = $${values.length}`);
-    }
-    if (rating) {
-        values.push(rating);
-        conditions.push(`e.rating >= $${values.length}`);
-    }
-
-    const whereClause = conditions.length ? `AND ${conditions.join(' AND ')}` : '';
-
     try {
-        const res = await client.query(`
-            SELECT 
-                e.id, e.id_event, e.id_user, e.description, e.registration_date_time, e.attended, e.observations, e.rating,
-                u.id as user_id, u.first_name, u.last_name, u.username
-            FROM event_enrollments e
-            JOIN users u ON e.id_user = u.id
-            WHERE e.id_event = $1 ${whereClause}
-        `, values);
-        return res.rows;
+        const res = await client.query('SELECT * FROM events WHERE id = $1', [eventId]);
+        return res.rows[0];
     } finally {
         client.release();
     }
 };
+
+listParticipantes = async (id, firstName, lastName, username, attended, rating) => {
+        const client = await pool.connect();
+        let query = `SELECT json_build_object(
+            'id', u.id, 
+            'first_name', u.first_name, 
+            'last_name', u.last_name, 
+            'username', u.username
+        ) AS user, ee.attended, ee.rating, ee.description
+        FROM users u 
+        INNER JOIN events_enrollments ee ON u.id = ee.id_user
+        WHERE ee.id_event = $1`;
+        const values = [id];
+        let countParams = 1;
+        if (firstName) {
+            query += ` AND u.first_name = $${++countParams}`;
+            values.push(firstName);
+            countParams++;
+        }
+        if (lastName) {
+            query += ` AND u.last_name = $${++countParams}`;
+            values.push(lastName);
+            countParams++;
+        }
+        if (username) {
+            query += ` AND u.username = $${++countParams}`;
+            values.push(username);
+            countParams++;
+        }
+        if (attended !== null) {
+            query += ` AND ee.attended = $${++countParams}`;
+            values.push(attended);
+            countParams++;
+        }
+        if (rating) {
+            query += ` AND ee.rating = $${++countParams}`;
+            values.push(rating);
+            countParams++;
+        }
+        
+        try {
+            const result = await client.query(query, values);
+            const rows = result.rows;
+            const response = {
+                collection: rows,
+                pagination: {
+                    limit: 15,
+                    offset: 0,
+                    nextPage: null,
+                    total: rows.length
+                }
+            };
+            return response;
+        }
+        catch (error) {
+            console.error(error);
+            return null;
+        }
+        finally {
+            client.release();
+        }
+    }
 
     getByIdAsync = async (id) => {
         const query = `

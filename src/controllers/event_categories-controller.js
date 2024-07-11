@@ -7,6 +7,7 @@ const EventsCategoryRouter =  Router();
 
 EventsCategoryRouter.get('/', async (req, res) => {
     const categorias = await svc.getAllAsync();
+    console.log(categorias);
     if (categorias) {
         res.status(200).send(categorias);
     } else {
@@ -25,10 +26,10 @@ EventsCategoryRouter.get('/:id', async (req, res) => {
 });
 
 EventsCategoryRouter.post('/', async (req, res) => {
-    catNueva = req.body;
+    const catNueva = req.body;
     const cat = await svc.createCategoryAsync(catNueva);
     if (cat) {
-        res.status(201).send();
+        res.status(201).send("Se creó correctamente");
     } else {
         res.status(400).send('No se pudo crear');
     }
@@ -39,7 +40,7 @@ EventsCategoryRouter.put('/', async (req, res) => {
     try {
         const catUpdateada = await svc.updateCategoryAsync(UpCat);
         if (catUpdateada) {
-            res.status(200).send();
+            res.status(200).send("Se updateo correctamente");
         } else {
             res.status(400).send();
         }
@@ -48,7 +49,7 @@ EventsCategoryRouter.put('/', async (req, res) => {
     }
 })
 
-EventsCategoryRouter.delete('/:id', async (req, res) => {
+EventsCategoryRouter.delete('/:id', async (req, res) => { //no lo probe
     const id = req.params;
     const catDeleteada = await svc.deleteCategoryAsync(id);
     if (catDeleteada) {
@@ -57,5 +58,7 @@ EventsCategoryRouter.delete('/:id', async (req, res) => {
         res.status(404).send();
     }
 })
+
+export default EventsCategoryRouter;
 
 

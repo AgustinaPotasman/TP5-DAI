@@ -20,7 +20,7 @@ EventsRouter.get('/', async (req, res) => {
 EventsRouter.get('/:id', async (req, res) => {
     try {
         const { id } = req.query;
-        const evento = await svc.getByIdAsync(id);
+        const evento = await svc.getById(id);
         if (evento) {
             res.status(200).json(evento);
         } else {
@@ -42,16 +42,35 @@ EventsRouter.get('/', async (req, res) => {
     }
 });
 
+EventsRouter.get('/:id', async (req, res) => {
+    const id = (req.params.id);
+    const result = await svc.getById(id);
+    if (result) {
+        res.status(200).send(result);
+    }
+    else {
+        res.status(404).send('Evento no encontrado');
+    }
+});
+
+
 EventsRouter.get('/:id/enrollment', async (req, res) => {
-    const eventId = req.params.id;
-    try {
-        const enrollments = await svc.listParticipantes(eventId);
-        if (!enrollments) {
-            return res.status(404).json({ message: 'No se encontraron inscripciones para este evento.' });
-        }
-        res.status(200).json(enrollments);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    const id = (req.params.id);
+    if (id === null) {
+        res.status(400).send('El id de evento debe ser un número entero');
+        return;
+    }
+    const firstName = (req.query.first_name);
+    const lastName = (req.query.last_name);
+    const username = (req.query.username);
+    const attended = (req.query.attended);
+    const rating = (req.query.rating);
+    const result = await svc.listParticipantes(id, firstName, lastName, username, attended, rating);
+    if (result) {
+        res.status(200).send(result);
+    }
+    else {
+        res.status(404).send('No se encontraron inscripciones que cumplan con los criterios de búsqueda');
     }
 });
 //8
