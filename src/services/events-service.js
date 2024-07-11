@@ -26,12 +26,21 @@ export default class EventsService {
         const EventsArray = await repo.getByIdAsync(id);
         return EventsArray;
     }
+    //8
     createEvent = async (eventData) => {
         const repo = new EventsRepository();
         const EventsArray = await repo.createEvent(eventData);
         return EventsArray;
     };
-
+    updateEvent = async (eventData) => {
+        const repo = new EventsRepository();
+        const EventsArray = await repo.updateEvent(eventData);
+        return EventsArray;
+    };
+    deleteEvent= async (id) => {
+        const repo = new EventsRepository();
+        await repo.deleteEvent(id);
+    };
     enrollAsync(id, userId) {
         const repo = new EventsRepository();
         return repo.enrollAsync(id, userId);

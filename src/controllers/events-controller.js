@@ -6,17 +6,6 @@ import { authenticateToken } from '../middlewares/auth-middleware.js';
 const EventsRouter =  Router();
 const svc = new EventsService();
 
-EventsRouter.get('/', async (req, res) => {
-    const { name, category, startdate, endDate, page, pageSize } = req.query;
-
-    try {
-        const events = await svc.searchEvents({ name, category, startdate, endDate, page, pageSize });
-        res.status(200).json(events);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
 EventsRouter.get('/:id', async (req, res) => {
     try {
         const { id } = req.query;
@@ -116,19 +105,46 @@ EventsRouter.put('/', authenticateToken, async (req, res) => {
     {
         return res.status(401).json({ message: 'El usuario no se encuentra autenticado' });
     }
-    const Id = svc.getById(id);
-    if (!Id) { // falta ver si pertenece al usuario autenticado 
-        res.status(404).send('El evento no existe o no le pretenece al usuario autenticado');
-        return;
-    }
     try {
-        const newEvent = await updateEvent({ name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location, userId });
-        res.status(200).json(newEvent);
-    } catch (error) {
+        const evento = svc.getById(id);
+        if (!evento|| evento.user_id !== userId) { 
+            res.status(404).send('El evento no existe o no le pretenece al usuario autenticado');
+            return;
+        }
+        else {
+            const newEvent = await svc.updateEvent({ name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location});
+            return res.status(200).json(newEvent);
+        }
+    }catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
+EventsRouter.delete('/:id', authenticateToken, async (req, res) => {
+    const id=req.params.id;
+    const userId = req.user.id;
+    try {
+        const evento = svc.getById(id);
+        if (!evento|| evento.user_id !== userId) { 
+            res.status(404).send('El evento no existe o no le pretenece al usuario autenticado');
+            return;
+        }
+        if(!userId)// en caso de que no se encuentre autenticado (nose como verificar eso)
+        {
+            return res.status(401).json({ message: 'El usuario no se encuentra autenticado' });
+        }
+        const hasUsersRegistered = false; // Valida que no haya usuarios registrados a este evento ¿?
+        if (hasUsersRegistered) {
+            return res.status(400).json({ message: 'Hay usuarios registrados en el evento.' });
+        }
+        else {
+            await svc.deleteEvent(id);
+            return res.status(200).json({ message: 'Evento eliminado correctamente.'});
+        }
+    }catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// 
 
 EventsRouter.post('/:id/enrollment', authenticateToken, async (req, res) => {
     const id = req.params.id

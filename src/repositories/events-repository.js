@@ -163,7 +163,8 @@ listParticipantes = async (id, firstName, lastName, username, attended, rating) 
           throw error;
         }
       }
-       createEvent = async (eventData) => {
+//8
+    createEvent = async (eventData) => {
         const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location, userId } = eventData;
         const client = await pool.connect();
         try {
@@ -176,7 +177,27 @@ listParticipantes = async (id, firstName, lastName, username, attended, rating) 
             client.release();
         }
     };
-
+    updateEvent = async (eventData) => {
+        const { name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location} = eventData;
+        const client = await pool.connect();
+        try {
+            const res = await client.query(
+                'UPDATE events SET name = $1, description = $2, max_assistance = $3, max_capacity = $4, price = $5, duration_in_minutes = $6, id_event_location = $7 WHERE id = $8 RETURNING *',
+                [name, description, max_assistance, max_capacity, price, duration_in_minutes, id_event_location, id]
+            );
+            return res.rows[0];
+        } finally {
+            client.release();
+        }
+    };
+    deleteEvent = async (id) => {
+        const client = await pool.connect();
+        try {
+            await client.query('DELETE FROM events WHERE id = $1', [id]);
+        } finally {
+            client.release();
+        }
+    };
     async enrollAsync(id, userId) {
         const client = await this.pool.connect();
         try {

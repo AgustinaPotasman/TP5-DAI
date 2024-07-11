@@ -2,12 +2,12 @@ import config from "../configs/db-config.js";
 import pkg from "pg";
 const { Pool } = pkg;
 
-export default class EventLocationRepository {
+export default class EventLocationsRepository {
     constructor() {
         this.pool = new Pool(config);
     }
 
-    async getAllEventLocations() {
+    async getAllLocations() {
         const client = await this.pool.connect();
         try {
             const result = await client.query('SELECT * FROM locations');
@@ -19,7 +19,7 @@ export default class EventLocationRepository {
         }
     }
 
-    async getEventLocationById(id) {
+    async getLocationById(id) {
         const client = await this.pool.connect();
         try {
             const result = await client.query('SELECT * FROM locations WHERE id = $1', [id]);
@@ -31,7 +31,7 @@ export default class EventLocationRepository {
         }
     }
 
-    async getEventLocationsByLocationId(id) {
+    async getEventLocation(id) {
         const client = await this.pool.connect();
         try {
             const result = await client.query('SELECT * FROM event_locations WHERE location_id = $1', [id]);
