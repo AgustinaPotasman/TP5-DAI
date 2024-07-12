@@ -74,6 +74,7 @@ export default class EventRepository {
     try {
         const res = await client.query('SELECT * FROM events WHERE id = $1', [eventId]);
         return res.rows[0];
+   
     } finally {
         client.release();
     }
@@ -81,15 +82,15 @@ export default class EventRepository {
 
 listParticipantes = async (id, firstName, lastName, username, attended, rating) => {
         const client = await pool.connect();
-        let query = `SELECT json_build_object(
+        let query = (`SELECT json_build_object(
             'id', u.id, 
             'first_name', u.first_name, 
             'last_name', u.last_name, 
             'username', u.username
         ) AS user, ee.attended, ee.rating, ee.description
         FROM users u 
-        INNER JOIN events_enrollments ee ON u.id = ee.id_user
-        WHERE ee.id_event = $1`;
+        INNER JOIN event_enrollments ee ON u.id = ee.id_user
+        WHERE ee.id_event = $1`, [id]);
         const values = [id];
         let countParams = 1;
         if (firstName) {
@@ -130,6 +131,7 @@ listParticipantes = async (id, firstName, lastName, username, attended, rating) 
                     total: rows.length
                 }
             };
+            console.log(response);
             return response;
         }
         catch (error) {

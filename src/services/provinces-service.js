@@ -6,7 +6,9 @@ export default class ProvincesService {
         return ProvinceArray;
     }
     getByIdAsync = async (id) => {
-        return await ProvincesRepository.getByIdAsync(id);
+        const repo = new ProvincesRepository();
+        const Province = await repo.getByIdAsync(id);
+        return Province;
     }
     createAsync= async (entity) => {
         const repo = new ProvincesRepository();

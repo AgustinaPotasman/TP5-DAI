@@ -6,9 +6,10 @@ import { authenticateToken } from '../middlewares/auth-middleware.js';
 const EventsRouter =  Router();
 const svc = new EventsService();
 
-EventsRouter.get('/:id', async (req, res) => {
+//4
+EventsRouter.get('/:id', async (req, res) => { 
     try {
-        const { id } = req.query;
+        const  id  = req.params.id;
         const evento = await svc.getById(id);
         if (evento) {
             res.status(200).json(evento);
@@ -20,6 +21,7 @@ EventsRouter.get('/:id', async (req, res) => {
     }
 });
 
+//2
 EventsRouter.get('/', async (req, res) => {
     const { name, category, startDate, endDate, page, pageSize } = req.query;
 
@@ -31,7 +33,7 @@ EventsRouter.get('/', async (req, res) => {
     }
 });
 
-EventsRouter.get('/:id', async (req, res) => {
+/*EventsRouter.get('/:id', async (req, res) => {
     const id = (req.params.id);
     const result = await svc.getById(id);
     if (result) {
@@ -40,9 +42,9 @@ EventsRouter.get('/:id', async (req, res) => {
     else {
         res.status(404).send('Evento no encontrado');
     }
-});
+});*/
 
-
+//5 NO FUNCIONA
 EventsRouter.get('/:id/enrollment', async (req, res) => {
     const id = (req.params.id);
     if (id === null) {
