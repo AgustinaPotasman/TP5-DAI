@@ -49,7 +49,6 @@ export default class ProvincesRepository {
             client.release();
         }
     }
-
     deleteAsync = async (id) => {
         const client = await pool.connect();
         try {

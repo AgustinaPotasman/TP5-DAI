@@ -1,5 +1,4 @@
 import {Router} from 'express';
-import express from "express";
 import ProvincesService from "../services/provinces-service.js"
 import ValidacionesHelper from "../helpers/validaciones-helper.js"
 const ProvincesRouter =  Router();
@@ -46,6 +45,23 @@ ProvincesRouter.post('/', async (req, res) =>
       respuesta = res.status(400).send(`Error en la solicitud.`);
     }
     return respuesta;
+});
+
+ProvincesRouter.post('/', async (req, res) => {
+    try {
+        const { name, latitude, longitude } = req.body;
+        if (!name || name.length < 3) {
+            return res.status(400).json({ message: 'Name  debe tener al menos 3 caracteres.'});
+        }
+        if (isNaN(latitude) || isNaN(longitude)) {
+            return res.status(400).json({ message: 'Los campos latitude y longitude deben ser números.' });
+        }
+        const province = await svc.createAsync({ name, latitude, longitude });
+        res.status(201).json(province);
+    } catch (error) {
+        console.error('error');
+        res.status(500).json({ message: 'Error' });
+    }
 });
 
 ProvincesRouter.put("/", async (req, res) => {
