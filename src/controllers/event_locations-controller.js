@@ -5,18 +5,18 @@ import locationService from "../services/event-location-service.js"
 const svc = new locationService()
 
 const router = express.Router();
-
+// funciona
 router.get('/', async (req, res) => {
     const result = await svc.getAllEventLocations();
     if (result) {
         res.status(200).send(result);
     } else {
-        res.status(500).send('Error interno');
+        res.status(500).send('Error');
     }
 });
 
 
-// por id
+// por id - funciona
 router.get('/:id', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     const id = req.params.id;
@@ -24,6 +24,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const eventLocation = await getEventLocationById(id, userId);
         if (!eventLocation) {
+            console.log(eventLocation);
             return res.status(404).json({ message: 'Event location not found or not authorized.' });
         }
         res.status(200).json(eventLocation);
@@ -43,7 +44,6 @@ router.post('/', authenticateToken, async (req, res) => {
     if (max_capacity <= 0) {
         return res.status(400).json({ message: 'Max capacity must be greater than zero.' });
     }
-
     try {
         const newEventLocation = await createEventLocation({ name, full_address, id_location, max_capacity, id_creator_user: userId });
         res.status(201).json(newEventLocation);
@@ -53,6 +53,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 
+// put - funciona
 router.put('/', authenticateToken, async (req, res) => {
     let respuesta;
     const userId = req.user.id;
@@ -79,7 +80,7 @@ router.put('/', authenticateToken, async (req, res) => {
     return respuesta;
 });
 
-// creo que elimina una ubicación de evento
+// creo que elimina una ubicación de evento - funciona
 router.delete('/:id', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     const id = req.params.id;
