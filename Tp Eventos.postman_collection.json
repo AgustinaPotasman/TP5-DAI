@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7a387e9c-1cbf-4684-8156-2524e74ae9b2",
+		"_postman_id": "a51f06d3-3c63-47e3-93e8-84b6b98ce689",
 		"name": "Tp Eventos",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -412,6 +412,127 @@
 									"key": "id",
 									"value": "10"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "province - GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/province",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"province"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "province - GetById (200)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/province/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"province",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "province - Create (201)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Nueva Provincia\",\r\n    \"full_name\": \"Provincia de Nueva Provincia\",\r\n    \"latitude\": -24.895086288452148,\r\n    \"longitude\": -59.93218994140625,\r\n    \"display_order\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/province",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"province"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "province - Update (200)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 90,\r\n    \"name\": \"Provincia Modificada 90\",\r\n    \"full_name\": \"Provincia Modificada 90\",\r\n    \"latitude\": -13.895086288452148,\r\n    \"longitude\": -14.93218994140625,\r\n    \"display_order\": 90\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/province/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"province",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "province - DeleteById (200)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/province/96",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"province",
+								"96"
 							]
 						}
 					},
