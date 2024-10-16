@@ -14,8 +14,7 @@ UserRouter.post('/register', async (req, res) => {
         return res.status(400).json({ message: 'Los campos first_name o last_name están vacíos.' });
     }
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(username)) {
+    if (!username) {
         return res.status(400).json({ message: 'El email (username) es sintácticamente inválido.' });
     }
 
