@@ -5,8 +5,8 @@ export default class UsersService {
         this.repos = new UserRepository();
     }
 
-    login = async (username) => {
-        return this.repos.login(username);
+    login = async (username, password) => {
+        return this.repos.login(username, password);
     }
 
     crearUser = async ({ first_name, last_name, username, password }) => {

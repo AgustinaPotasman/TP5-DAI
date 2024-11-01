@@ -529,6 +529,15 @@ INSERT INTO public.users (id, first_name, last_name, username, password) VALUES 
 INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (4, 'ari', 'castro', 'aricastro', '123');
 INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (5, 'ari', 'castro', 'aricastro', '123');
 INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (6, 'ari', 'castro', 'aricastro', '123');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (7, 'aaa', 'aaaa', 'aaa', '$2a$10$jZf3MxLfVobJkB72lSvGFeYm0Jucy17GPr804z18a41qZUhph/Gt2');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (8, 'r', 'r', 'r', '$2a$10$IDMP5p5Xl2orKu/QVQtwueYv8IGJpl/vha1AxFOH19VLfuROarkKC');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (9, 'r', 'r', 'r', '$2a$10$RZO0O2riBzSzIaRi2Kc7KuOwOGAdSlgmfTs4eYN85sFJV2YQaPT2e');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (10, 'r', 'r', 'r', '$2a$10$11H3YYR.5PHK8Vqide5ANug/qXfU1geMcUTA9nm4BDJXqx94WKrSG');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (11, 'r', 'r', 'r', '$2a$10$mByKJfOndRH07LeXgT4Wpe/b1CRD/mA8sHlunTR8eyduINKPJ9uje');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (12, 'i', 'i', 'i', '$2a$10$.CT8Yd1tgAGvT32UoQvw5OwsbOCwhuTMRsU6cCVH7YsYCBa.gcVIy');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (13, 'i', 'i', 'i', '$2a$10$VYDojfvp/D6FkGlUvelTzu8kuXRxJViHSLk8Ommi7VpETTAOcGUmO');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (14, 'hola', 'hola', 'hola', '$2a$10$LLZLMGeRV8wjwHlEM86U0eDvP5cc3XslPvhiBFzMJ31lLV/Nrru6O');
+INSERT INTO public.users (id, first_name, last_name, username, password) VALUES (15, 'i', 'i', 'i', '$2a$10$TpLiH9EllpXlFAa8V9JeIe2Pa7cxrs7Rnb0zbgbvkgmtsv3qR7oye');
 
 
 --
@@ -591,7 +600,7 @@ SELECT pg_catalog.setval('public.tags_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 6, true);
+SELECT pg_catalog.setval('public.users_id_seq', 15, true);
 
 
 --

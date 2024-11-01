@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7e903425-1380-4d13-8215-d2bf2ee6b669",
+		"_postman_id": "51071fb0-9f9f-4548-b963-f217981d2130",
 		"name": "Tp Eventos",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -73,7 +73,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"szabo@gmail.com\",\r\n    \"password\": \"matisza200\"\r\n}",
+							"raw": "{\r\n    \"username\": \"r\",\r\n    \"password\": \"rrrrr\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -103,7 +103,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"first_name\": \"Matii\",\r\n    \"last_name\": \"Szabo\",\r\n    \"username\": \"szabo@gmail.com\",\r\n    \"password\": \"matisza200\"\r\n}",
+							"raw": "{\r\n    \"first_name\": \"i\",\r\n    \"last_name\": \"i\",\r\n    \"username\": \"i\",\r\n    \"password\": \"ariana\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

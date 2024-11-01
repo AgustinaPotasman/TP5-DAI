@@ -1,26 +1,29 @@
 import pool from "../configs/db-config.js";
-import bcrypt from 'bcryptjs'; // Importamos bcrypt para encriptar la contraseña
-
+import pkg from 'pg';
+import bcrypt from 'bcryptjs';
+const { Client } = pkg;
 export default class UserRepository {
-    login = async (username) => {
-        const client = await pool.connect();
+    
+    login = async (username, password) => {
         try {
-            const rta = await client.query(
-                `SELECT * FROM users WHERE username = $1`, 
-                [username]
-            );
-            
-            if (rta.rows.length > 0) {
-                return rta.rows[0];
+            const client = await pool.connect(); 
+            const sql = 'SELECT * FROM users WHERE username = $1';
+            const result = await client.query(sql, [username]);
+            const user = result.rows[0];
+            if (user && await bcrypt.compare(password, user.password)) {
+                return user;
+              
             }
-            return null;
+            else{
+                 return null;
+                 
+            }
+           
         } catch (error) {
             console.error('Error during login:', error);
             return null;
-        } finally {
-            client.release();
         }
-    }
+    };
 
     crearUser = async (first_name, last_name, username, password) => {
         const client = await pool.connect();
@@ -34,10 +37,10 @@ export default class UserRepository {
             // Encriptar la contraseña antes de guardarla
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Inserción del nuevo usuario en la base de datos con la contraseña encriptada
+           
             await client.query(
                 `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`,
-                [first_name, last_name, username, hashedPassword] // Usar hashedPassword
+                [first_name, last_name, username, hashedPassword] 
             );
             return true;
         } catch (error) {
