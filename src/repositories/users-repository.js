@@ -10,6 +10,7 @@ export default class UserRepository {
             const sql = 'SELECT * FROM users WHERE username = $1';
             const result = await client.query(sql, [username]);
             const user = result.rows[0];
+            console.log("user es ", await bcrypt.compare(password, user.password))
             if (user && await bcrypt.compare(password, user.password)) {
                 return user;
               

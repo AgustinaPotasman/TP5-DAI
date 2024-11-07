@@ -5,7 +5,7 @@ import UsersService from "../services/users-service.js";
 
 const UserRouter = Router();
 const svc = new UsersService();
-const JWT_SECRET = 'your_jwt_secret';
+const JWT_SECRET = 'KvduPPiIG7NJ2Quhk5jGMy6z2YizmG';
 
 // Ruta para el registro de usuarios
 UserRouter.post('/register', async (req, res) => {
@@ -44,9 +44,7 @@ UserRouter.post('/register', async (req, res) => {
 UserRouter.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        
-   
-const user = await svc.login(username, password );
+    const user = await svc.login(username, password );
         if (user) {
             // Generar el token JWT con el id del usuario
             const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '365d' });

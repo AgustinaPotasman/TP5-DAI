@@ -1,3 +1,4 @@
+// UsersService.js
 import UserRepository from '../repositories/users-repository.js';
 
 export default class UsersService {
