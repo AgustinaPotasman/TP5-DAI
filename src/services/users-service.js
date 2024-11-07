@@ -1,4 +1,3 @@
-// UsersService.js
 import UserRepository from '../repositories/users-repository.js';
 
 export default class UsersService {
@@ -8,9 +7,11 @@ export default class UsersService {
 
     login = async (username, password) => {
         return this.repos.login(username, password);
-    }
+    };
 
-    crearUser = async ({ first_name, last_name, username, password }) => {
+    crearUser = async (userData) => {
+       
+        const { first_name, last_name, username, password } = userData;
         return this.repos.crearUser(first_name, last_name, username, password);
-    }
+    };
 }

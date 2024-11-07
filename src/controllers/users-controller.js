@@ -7,29 +7,27 @@ const UserRouter = Router();
 const svc = new UsersService();
 const JWT_SECRET = 'KvduPPiIG7NJ2Quhk5jGMy6z2YizmG';
 
-// Ruta para el registro de usuarios
+
+// Controlador de registro
 UserRouter.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, username, password } = req.body;
 
+        // Validaciones
         if (!first_name || !last_name) {
             return res.status(400).json({ message: 'Los campos first_name o last_name están vacíos.' });
         }
-
         if (!username) {
             return res.status(400).json({ message: 'El email (username) es sintácticamente inválido.' });
         }
-
         if (password.length < 3) {
             return res.status(400).json({ message: 'El campo password tiene menos de 3 letras.' });
         }
 
-        // Cifrar la contraseña antes de almacenarla
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Registrar al usuario con la contraseña cifrada
+        console.log('Hashed Password:', hashedPassword);  // Añade esto para verificar el hash
         const newUser = await svc.crearUser({ first_name, last_name, username, password: hashedPassword });
-        if (newUser) {
+           if (newUser) {
             res.status(201).json({ message: 'Usuario registrado exitosamente', newUser });
         } else {
             res.status(400).json({ message: 'Error al registrar el usuario.' });
@@ -40,13 +38,23 @@ UserRouter.post('/register', async (req, res) => {
     }
 });
 
-// Ruta para iniciar sesión
+
+
 UserRouter.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-    const user = await svc.login(username, password );
+
+        console.log('Parametros recibidos:', { username, password }); 
+
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Faltan parámetros' });
+        }
+
+        const user = await svc.login(username, password);
+
+        console.log('Resultado del login:', user); 
+        
         if (user) {
-            // Generar el token JWT con el id del usuario
             const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '365d' });
             res.status(200).json({ user, token });
         } else {
