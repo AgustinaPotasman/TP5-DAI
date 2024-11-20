@@ -45,23 +45,31 @@ export default class UserRepository {
     crearUser = async (first_name, last_name, username, password) => {
         const client = await pool.connect();
         try {
+            // Validación de los parámetros de entrada
             if (!first_name || !last_name || !username || !password) {
                 console.error('Faltan campos para registrar al usuario.');
-                return false;
+                return null;  // Devolver null en caso de error
             }
-           
-           
-            await client.query(
-                `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`,
+    
+            // Insertar el usuario en la base de datos y retornar todos los campos con RETURNING *
+            const result = await client.query(
+                `INSERT INTO users (first_name, last_name, username, password) 
+                 VALUES ($1, $2, $3, $4) 
+                 RETURNING *`,
                 [first_name, last_name, username, password]
             );
-            return true;
+    
+            // Obtener el usuario insertado desde el resultado de la consulta
+            const newUser = result.rows[0];  // El primer registro retornado es el usuario creado
+    
+            // Eliminar el campo 'password' por razones de seguridad antes de devolver el objeto
+            
+            return newUser;  // Devolver el usuario completo (sin la contraseña)
         } catch (error) {
             console.error('Error durante la creación de usuario:', error);
-            return false;
+            return null;  // Devolver null si hay un error
         } finally {
-            client.release();
+            client.release();  // Liberar el cliente de la base de datos
         }
-    }
-    
+    }    
 }    

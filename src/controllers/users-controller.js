@@ -8,12 +8,10 @@ const svc = new UsersService();
 const JWT_SECRET = 'KvduPPiIG7NJ2Quhk5jGMy6z2YizmG';
 
 
-// Controlador de registro
 UserRouter.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, username, password } = req.body;
 
-        // Validaciones
         if (!first_name || !last_name) {
             return res.status(400).json({ message: 'Los campos first_name o last_name están vacíos.' });
         }
@@ -25,7 +23,7 @@ UserRouter.post('/register', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log('Hashed Password:', hashedPassword);  // Añade esto para verificar el hash
+        console.log('Hashed Password:', hashedPassword);  
         const newUser = await svc.crearUser({ first_name, last_name, username, password: hashedPassword });
            if (newUser) {
             res.status(201).json({ message: 'Usuario registrado exitosamente', newUser });
